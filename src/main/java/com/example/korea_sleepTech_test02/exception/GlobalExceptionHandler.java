@@ -5,6 +5,7 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -31,6 +32,14 @@ public class GlobalExceptionHandler {
         e.printStackTrace();
         ResponseDto<?> response = ResponseDto.setFailed("Bad Request: " + e.getMessage());
         return ResponseEntity.badRequest().body(response);
+    }
+
+    // 401 - 인증 정보 없음
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ResponseDto<?>> handleUnauthorized(Exception e) {
+        e.printStackTrace();
+        ResponseDto<?> response = ResponseDto.setFailed("Unauthorized: " + e.getMessage());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
     }
 
     // 403 - 권한 없음: 인증되지 않은 사용자가 접근하려고 할 때

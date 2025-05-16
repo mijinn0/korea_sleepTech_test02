@@ -14,6 +14,7 @@ import com.example.korea_sleepTech_test02.service.PostService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,7 +35,12 @@ public class PostServiceImpl implements PostService {
         PostDetailResponseDto responseDto = null;
 
         User user = userRepository.findByUsername(getCurrentAdminUserName())
-                .orElseThrow(() -> new IllegalArgumentException(ResponseMessage.NOT_EXISTS_USER));
+                .orElseThrow(() -> new AuthenticationException("인증되지 않은 회원의 접근입니다.") {
+                    @Override
+                    public void printStackTrace() {
+                        super.printStackTrace();
+                    }
+                });
 
         boolean isUser = user.getRole().equals("USER");
 
